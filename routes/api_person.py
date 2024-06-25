@@ -10,6 +10,7 @@ api_person = Blueprint("api_person", __name__)
 personController = PersonController()
 
 @api_person.route("/person", methods=["GET"])
+@token_requeird
 def listPerson():
     return make_response(
         jsonify(
@@ -26,7 +27,7 @@ def listPersonAccount():
     return make_response_ok(personController.listPersonAccount())
     
 @api_person.route("/person/save", methods=["POST"])
-# @expects_json(schema_person)
+@token_requeird
 def createPerson():
     data = request.json
     result = personController.save_person(data)
@@ -44,7 +45,7 @@ def createPerson():
         return make_response(jsonify({"error": "Error desconocido"}), 500)
 
 @api_person.route('/modify_person/<external_id>', methods=['POST'])
-# @expects_json(schema_person)
+@token_requeird
 def modify_person(external_id):
     data = request.json
     modified_person = personController.modify_person(external_id, data)
@@ -60,6 +61,7 @@ def modify_person(external_id):
     
     
 @api_person.route('/deactivate_person/<external_id>', methods=['GET'])
+@token_requeird
 def deactivate_person(external_id):
     success = personController.deactivate_account(external_id)
     if success:
@@ -68,6 +70,7 @@ def deactivate_person(external_id):
         return make_response_error(Errors.error["-3"], 404)
     
 @api_person.route('/roles', methods=['GET'])
+@token_requeird
 def list_roles():
     return make_response(
         jsonify(
@@ -81,6 +84,7 @@ def list_roles():
     )
     
 @api_person.route('/search/person', methods=['GET'])
+@token_requeird
 def search():
     atribute = request.args.get('atribute')
     if not atribute:
@@ -90,13 +94,10 @@ def search():
     
     if result == -3:
         return jsonify({'error': 'Person not found'}), 404
-    
-    # Supongo que tu modelo Person tiene un método o propiedad para convertir a dict
+
     person_data = {
-        'identification': result.identification,
         'name': result.name,
         'lastname': result.lastname,
-        'phone': result.phone,
         'email': result.account.email,
         'rol': result.rol.rol,
         'status': result.account.status,
