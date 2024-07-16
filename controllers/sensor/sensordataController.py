@@ -5,8 +5,6 @@ from flask import jsonify, request
 from models.sensor import Sensor
 from models.sensordata import SensorData
 from app import db
-from scipy.interpolate import interp1d
-import numpy as np
 
 
 class SensorDataController:
@@ -178,3 +176,37 @@ class SensorDataController:
             datos.append(data_sensor)
         return datos
 
+    def listSensorData(self):
+        sensors = Sensor.query.all()
+        sensor_data_list = []
+
+        for sensor in sensors:
+            for data in sensor.datos:
+                sensor_data = {
+                    "sensor_name": sensor.name,
+                    "sensor_type": sensor.type_sensor.name if sensor.type_sensor else None,
+                    "data": data.data,
+                    "date": data.date.isoformat() if data.date else None,
+                    "hour": data.hour.strftime("%H:%M:%S") if data.hour else None,
+                }
+                sensor_data_list.append(sensor_data)
+    
+        return sensor_data_list
+    
+    def listSensorDataByType(self, sensor_type_name):
+    # Buscar sensores que coincidan con el tipo de sensor proporcionado
+        sensors = Sensor.query.filter(Sensor.type_sensor.has(name=sensor_type_name)).all()
+        sensor_data_list = []
+
+        for sensor in sensors:
+            for data in sensor.datos:
+                sensor_data = {
+                    "sensor_name": sensor.name,
+                    "sensor_type": sensor.type_sensor.name if sensor.type_sensor else None,
+                    "data": data.data,
+                    "date": data.date.isoformat() if data.date else None,
+                    "hour": data.hour.strftime("%H:%M:%S") if data.hour else None,
+                }
+                sensor_data_list.append(sensor_data)
+
+        return sensor_data_list

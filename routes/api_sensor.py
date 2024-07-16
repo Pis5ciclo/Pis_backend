@@ -14,11 +14,6 @@ sensorDataController = SensorDataController()
 # @token_requeird
 def listPerson():
         return make_response_ok([i.serialize for i in sensorController.listSensor()])
-    
-@api_sensor.route("/sensor/list_sensor_name", methods=["GET"])
-# @token_requeird
-def listNameSensor():
-        return make_response_ok(sensorController.listSensorName())
 
 @api_sensor.route("/sensor/save", methods=["POST"])
 # @token_requeird
@@ -49,10 +44,6 @@ def modify_sensor():
     else:
         return make_response_ok({"success": Success.success["4"]})   
 
-@api_sensor.route("/sensor/list_data", methods=["GET"])
-def listSensorData():
-    result = sensorDataController.list_sensor_data()
-    return make_response_ok(result)
 
 @api_sensor.route("/sensor/list_sensor_type/<type>", methods=["GET"])
 def listSensorType(type):
@@ -109,3 +100,36 @@ def api_sensor_interpolacion(sensor_id, fecha_inicio, fecha_fin):
         return jsonify(resultados_interpolados), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@api_sensor.route('/data_sensor', methods=['POST'])
+def data_sensor():
+    data = request.get_json()
+    return sensorController.guardar_datos_sensor(data)
+
+@api_sensor.route('/data_sensor_aire', methods=['POST'])
+def data_sensor_agua():
+    data = request.get_json()
+    return sensorController.guardar_datos_sensor_aire(data)
+
+@api_sensor.route('/data/sensor', methods = ["GET"])
+def listSensorData():
+    return make_response_ok(sensorDataController.listSensorData())
+
+@api_sensor.route('/search/data', methods = ['GET'])
+def search():
+    atribute = request.args.get('atribute')
+    if not atribute:
+        return jsonify({'error': 'Attribute is required'}), 400
+    result = sensorDataController.listSensorDataByType(atribute)
+    
+    if result == -3:
+        return jsonify({'error': 'Person not found'}), 404
+    
+    data ={
+        "sensor_name": result.sensor_name,
+        "sensor_type": result.sensor_type,
+        "data": result.data,
+        "date": result. date,
+        "hour": result.hour,
+    }
+    return jsonify(data), 200
