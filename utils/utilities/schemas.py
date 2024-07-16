@@ -14,10 +14,10 @@ schema_person = {
         "lastname": {"type": "string"},
         "phone": {"type": "string"},
         "identification": {"type": "string"},
-        # "email": {"type": "string"},
-        # "password": {"type": "string"},
+        "email": {"type": "string"},
+        "password": {"type": "string"},
     },
-    "required": ["name", "lastname", "phone", "identification"],
+    "required": ["name", "lastname", "phone", "identification", "email", "password"],
 }
 
 schema_sensor = {

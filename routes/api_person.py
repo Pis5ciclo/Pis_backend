@@ -9,7 +9,6 @@ from utils.utilities.response_http import make_response_error, make_response_ok
 api_person = Blueprint("api_person", __name__)
 personController = PersonController()
 
-
 @api_person.route("/person", methods=["GET"])
 @token_requeird
 def listPerson():
@@ -51,10 +50,12 @@ def modify_person(external_id):
     data = request.json
     modified_person = personController.modify_person(external_id, data)
     print(external_id)
-    if (modified_person == -3):
-        return make_response_error(Errors.error["-3"], 404)
+    if modified_person == -3:
+        return make_response(jsonify({"error": Errors.error["-3"]}), 400)
     elif modified_person == -8:
-        return make_response_error(Errors.error["-8"], 400)
+        return make_response(jsonify({"error": Errors.error["-8"]}), 400)
+    elif modified_person == -13:
+        return make_response(jsonify({"error": Errors.error["-13"]}), 400)
     else:
         return make_response_ok({"success": Success.success["1"]})
     

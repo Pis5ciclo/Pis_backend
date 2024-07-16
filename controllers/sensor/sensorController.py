@@ -1,4 +1,8 @@
 from models.sensor import Sensor
+from datetime import datetime
+from flask import jsonify
+from models.type_sensor import TypeSensor
+from models.sensordata import SensorData
 import uuid
 from app import db
 import re
@@ -93,3 +97,49 @@ class SensorController:
         else:
             return -3
 
+    def guardar_datos_sensor(self, data):
+        tds_value = data.get('tds')
+        ip_address = data.get('ip')
+        timestamp = data.get('timestamp') 
+
+        sensor = Sensor.query.filter_by(ip=ip_address).first()
+
+        if not sensor:
+            sensor = Sensor(ip=ip_address, type_sensor=TypeSensor.AGUA)
+            db.session.add(sensor)
+            db.session.commit()
+        fecha, hora = timestamp.split('T')
+        fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
+        hora_obj = datetime.strptime(hora, '%H:%M:%S').time()
+
+            # Crear un nuevo dato para ese sensor
+        new_dato = SensorData(data=tds_value, date=fecha_obj, hour=hora_obj, sensor_id=sensor.id)
+
+            # Guardar en la base de datos
+        db.session.add(new_dato)
+        db.session.commit()
+
+        return jsonify({'message': 'Datos guardados correctamente.'}), 200
+    
+
+    def guardar_datos_sensor_aire(self, data):
+        valor_sensor = data.get('data')
+        ip_address = data.get('ip')
+        timestamp = data.get('timestamp')
+        sensor = Sensor.query.filter_by(ip=ip_address).first()
+
+        if not sensor:
+            sensor = Sensor(ip=ip_address, type_sensor=TypeSensor.AIRE)
+            db.session.add(sensor)
+            db.session.commit()
+
+        fecha, hora = timestamp.split('T')
+        fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
+        hora_obj = datetime.strptime(hora, '%H:%M:%S').time()
+
+        new_dato = SensorData(data=valor_sensor, date=fecha_obj, hour=hora_obj, sensor_id =sensor.id)
+
+        db.session.add(new_dato)
+        db.session.commit()
+
+        return jsonify({'message': 'Datos guardados correctamente.'}), 200
