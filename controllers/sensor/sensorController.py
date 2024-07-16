@@ -18,6 +18,11 @@ class SensorController:
         
     def listSensor(self):
         return Sensor.query.all()
+    
+    def listSensorName(self):
+        active_sensors = Sensor.query.filter_by(status='activo').all()
+        sensor_list = [{'id': sensor.id, 'name': sensor.name} for sensor in active_sensors]
+        return sensor_list
 
     def save_sensor(self, data):
         if not self.validate_ip.match(data['ip']):
