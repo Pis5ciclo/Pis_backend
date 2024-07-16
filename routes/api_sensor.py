@@ -1,6 +1,6 @@
 from controllers.authenticateController import token_requeird
 from utils.utilities.schemas import schema_sensor
-from flask import Blueprint, request
+from flask import Blueprint, jsonify, request
 from controllers.sensor.sensorController import SensorController
 from controllers.sensor.sensordataController import SensorDataController
 from utils.utilities.errors import Errors
@@ -14,6 +14,11 @@ sensorDataController = SensorDataController()
 # @token_requeird
 def listPerson():
         return make_response_ok([i.serialize for i in sensorController.listSensor()])
+    
+@api_sensor.route("/sensor/list_sensor_name", methods=["GET"])
+# @token_requeird
+def listNameSensor():
+        return make_response_ok(sensorController.listSensorName())
 
 @api_sensor.route("/sensor/save", methods=["POST"])
 # @token_requeird
@@ -82,3 +87,25 @@ def search_by_name():
         return make_response_error(Errors.error["-11"], 404)
     else:
         return make_response_ok({"success": result.serialize })
+    
+@api_sensor.route('/api/simulacion', methods=['GET'])
+def api_get_sensor_data():
+    data, status_code = sensorDataController.get_sensor_data()
+    return jsonify(data), status_code
+
+@api_sensor.route('/api/simulacion/date', methods=['GET'])
+def search_sensor_date():
+    return sensorDataController.search_data_date()
+
+@api_sensor.route('/api/simulacion/interpolate', methods=['GET'])
+def api_get_sensor_data_interpolate():
+    data, status_code = sensorDataController.get_interpolated_sensor_data()
+    return jsonify(data), status_code
+
+@api_sensor.route('/api/sensor_interpolacion/<int:sensor_id>/<fecha_inicio>/<fecha_fin>', methods=['GET'])
+def api_sensor_interpolacion(sensor_id, fecha_inicio, fecha_fin):
+    try:
+        resultados_interpolados = sensorDataController.interpolacion_sensor(sensor_id, fecha_inicio, fecha_fin)
+        return jsonify(resultados_interpolados), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
