@@ -133,3 +133,8 @@ def search():
         "hour": result.hour,
     }
     return jsonify(data), 200
+
+@api_sensor.route("/sensor/list_sensor_name", methods=["GET"])
+# @token_requeird
+def listNameSensor():
+        return make_response_ok(sensorController.listSensorName())
