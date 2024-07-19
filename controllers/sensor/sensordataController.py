@@ -8,8 +8,8 @@ from app import db
 
 
 class SensorDataController:
-    def get_sensor_data(self):
-        sensor_data = SensorData.query.filter_by(sensor_id=1).all()  # Filtra por el ID del sensor que deseas mostrar
+    def get_sensor_data(self, id):
+        sensor_data = SensorData.query.filter_by(sensor_id= id).all()  # Filtra por el ID del sensor que deseas mostrar
         if not sensor_data:
             return jsonify({"msg": "Sensor data not found", "code": 404}), 404
 
@@ -23,7 +23,7 @@ class SensorDataController:
             })
         return data, 200
     
-    def search_data_date(self):
+    def search_data_date(self, value):
         start_date_str = request.args.get('start_date')
         end_date_str = request.args.get('end_date')
 
@@ -36,7 +36,7 @@ class SensorDataController:
         except ValueError:
             return jsonify({"msg": "Invalid date format", "code": 400}), 400
 
-        sensor_data = SensorData.query.filter(SensorData.sensor_id == 1, SensorData.date >= start_date, SensorData.date <= end_date).all()
+        sensor_data = SensorData.query.filter(SensorData.sensor_id == value, SensorData.date >= start_date, SensorData.date <= end_date).all()
         
         if not sensor_data:
             return jsonify({"msg": "Sensor data not found", "code": 404}), 404
@@ -51,12 +51,12 @@ class SensorDataController:
             })
         return jsonify(data), 200
 
-    def get_interpolated_sensor_data(self):
-        data, status_code = self.get_sensor_data()
-
+    def get_interpolated_sensor_data(self, id):
+        data, status_code = self.get_sensor_data(id)
+        
         if status_code != 200:
             return data, status_code
-
+        
         interpolated_data = self.linear_interpolation(data)
         return interpolated_data, 200
 

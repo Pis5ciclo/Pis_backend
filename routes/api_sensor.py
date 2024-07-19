@@ -12,7 +12,7 @@ sensorController = SensorController()
 sensorDataController = SensorDataController()
 @api_sensor.route("/list_sensor", methods=["GET"])
 # @token_requeird
-def listPerson():
+def listSensor():
         return make_response_ok([i.serialize for i in sensorController.listSensor()])
 
 @api_sensor.route("/sensor/save", methods=["POST"])
@@ -69,28 +69,18 @@ def desactivateSensor(external_id):
     elif result == -20:
         return make_response_error(Errors.error["-20"], 404)
     
-
-@api_sensor.route('/sensor/search',  methods=["GET"])
-def search_by_name():
-    name = request.json['name']
-    result = sensorController.search_sensor(name)
-    if result == -3:
-        return make_response_error(Errors.error["-11"], 404)
-    else:
-        return make_response_ok({"success": result.serialize })
-    
-@api_sensor.route('/api/simulacion', methods=['GET'])
-def api_get_sensor_data():
-    data, status_code = sensorDataController.get_sensor_data()
+@api_sensor.route('/api/simulacion/<id>', methods=['GET'])
+def api_get_sensor_data(id):
+    data, status_code = sensorDataController.get_sensor_data(id)
     return jsonify(data), status_code
 
-@api_sensor.route('/api/simulacion/date', methods=['GET'])
-def search_sensor_date():
-    return sensorDataController.search_data_date()
+@api_sensor.route('/api/simulacion/date/<id>', methods=['GET'])
+def search_sensor_date(id):
+    return sensorDataController.search_data_date(id)
 
-@api_sensor.route('/api/simulacion/interpolate', methods=['GET'])
-def api_get_sensor_data_interpolate():
-    data, status_code = sensorDataController.get_interpolated_sensor_data()
+@api_sensor.route('/api/simulacion/interpolate/<id>', methods=['GET'])
+def api_get_sensor_data_interpolate(id):
+    data, status_code = sensorDataController.get_interpolated_sensor_data(id)
     return jsonify(data), status_code
 
 @api_sensor.route('/api/sensor_interpolacion/<int:sensor_id>/<fecha_inicio>/<fecha_fin>', methods=['GET'])
@@ -115,24 +105,6 @@ def data_sensor_agua():
 def listSensorData():
     return make_response_ok(sensorDataController.listSensorData())
 
-@api_sensor.route('/search/data', methods = ['GET'])
-def search():
-    atribute = request.args.get('atribute')
-    if not atribute:
-        return jsonify({'error': 'Attribute is required'}), 400
-    result = sensorDataController.listSensorDataByType(atribute)
-    
-    if result == -3:
-        return jsonify({'error': 'Person not found'}), 404
-    
-    data ={
-        "sensor_name": result.sensor_name,
-        "sensor_type": result.sensor_type,
-        "data": result.data,
-        "date": result. date,
-        "hour": result.hour,
-    }
-    return jsonify(data), 200
 
 @api_sensor.route("/sensor/list_sensor_name", methods=["GET"])
 # @token_requeird
