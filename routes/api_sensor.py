@@ -1,6 +1,6 @@
 from controllers.authenticateController import token_requeird
 from utils.utilities.schemas import schema_sensor
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, jsonify, make_response, request
 from controllers.sensor.sensorController import SensorController
 from controllers.sensor.sensordataController import SensorDataController
 from utils.utilities.errors import Errors
@@ -21,7 +21,9 @@ def createSensor():
     data = request.json
     result = sensorController.save_sensor(data)
     
-    if result == -10:
+    if result == -23:
+        return make_response(jsonify({"error": "La IP ya está registrada"}), 400)
+    elif result == -10:
         return make_response_error(Errors.error["-10"], 400)
     elif result == -21:
         return make_response_error(Errors.error["-21"], 400)
@@ -30,12 +32,13 @@ def createSensor():
     elif result == -9:
         return make_response_error(Errors.error["-9"], 400)   
 
-@api_sensor.route('/modify_sensor', methods=['POST'])
-def modify_sensor():
+@api_sensor.route('/modify_sensor/<external_id>', methods=['POST'])
+def modify_sensor(external_id):
     data = request.json
-    result = sensorController.modify_sensor(data)
-
-    if result == -10:
+    result = sensorController.modify_sensor(external_id, data)
+    if result == -23:
+        return make_response(jsonify({"error": "La IP ya está registrada"}), 400)
+    elif  result == -10:
         return make_response_error(Errors.error["-10"], 400)
     if result == -21:
         return make_response_error(Errors.error["-21"], 400)
