@@ -70,7 +70,7 @@ def deactivate_person(external_id):
         return make_response_error(Errors.error["-3"], 404)
     
 @api_person.route('/roles', methods=['GET'])
-@token_requeird
+#@token_requeird
 def list_roles():
     return make_response(
         jsonify(

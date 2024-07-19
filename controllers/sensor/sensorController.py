@@ -7,6 +7,7 @@ import uuid
 from app import db
 import re
 from models.person import Person
+from models.type_sensor import TypeSensor
 class SensorController:
 
     validate_ip = re.compile(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
@@ -29,6 +30,10 @@ class SensorController:
         return sensor_list
 
     def save_sensor(self, data):
+        repeated_ip = Sensor.query.filter_by(ip=data["ip"]).first()
+        if repeated_ip:
+            return -23
+        
         if not self.validate_ip.match(data['ip']):
             return -10 
         
@@ -54,36 +59,42 @@ class SensorController:
             db.session.rollback()
             return -9
 
-    def modify_sensor(self, data):
-        if not self.validate_ip.match(data['ip']):
-            return -10 
-        
-        latitude = data["latitude"]
-        longitude = data["longitude"]
-        validation_result = self.validate_latitude_longitude(latitude, longitude)
-        if validation_result != True:
-            return validation_result
 
-        try:
-            sensor = Sensor(
-                name=data["name"],
-                latitude=float(latitude),
-                longitude=float(longitude),
-                ip=data["ip"],
-                type_sensor=data["type_sensor"],
-                external_id=uuid.uuid4()
-            )
-            db.session.add(sensor)
+    def modify_sensor(self, external_id, data):
+        sensor = Sensor.query.filter_by(external_id=external_id).first()
+        repeated_ip = Sensor.query.filter_by(ip=data["ip"]).first()
+        if repeated_ip:
+            return -23
+        if sensor:
+            if not self.validate_ip.match(data.get('ip')):
+                return {"error": "Invalid IP format"}, 400
+            
+            latitude = data.get("latitude", sensor.latitude)
+            longitude = data.get("longitude", sensor.longitude)
+            validation_result = self.validate_latitude_longitude(latitude, longitude)
+            if validation_result is not True:
+                return {"error": validation_result}, 400
+            
+            sensor.name = data.get("name", sensor.name)
+            sensor.latitude = latitude
+            sensor.longitude = longitude
+            sensor.ip = data.get("ip", sensor.ip)
+            sensor.type_sensor = data.get("type_sensor", sensor.type_sensor)
+            
             db.session.commit()
-            return 2 
-        except:
-            db.session.rollback()
+            return sensor
+        else:
             return -9
+
+
     
     def deactivate_sensor(self, external_id):
         sensor = Sensor.query.filter_by(external_id=external_id).first()
         if sensor:
-            sensor.status = "desactivo"
+            if sensor.status == "activo":
+                sensor.status = "desactivo"
+            else:
+                sensor.status = "activo"
             db.session.commit()
             return 5
         else:
@@ -96,6 +107,13 @@ class SensorController:
             return name
         else:
             return -3
+        
+    def all_types(self):
+        sensors = TypeSensor
+        sensors_data = [
+            {"name": sensor.value} for sensor in sensors
+        ]
+        return sensors_data
 
     def guardar_datos_sensor(self, data):
         tds_value = data.get('tds')
