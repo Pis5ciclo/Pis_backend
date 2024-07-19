@@ -8,9 +8,6 @@ import re
 import bcrypt
 
 class PersonController:
-    def listPerson(self):
-        return Person.query.all()
-
     def listPersonAccount(self):
         persons = Person.query.all()
         person_List = []
@@ -76,7 +73,7 @@ class PersonController:
         account.password = hashed_password.decode("utf-8")
         account.person_id = person.id
         account.external_id = uuid.uuid4()
-        account.status = 'activo'  # Asignar estado activo por defecto
+        account.status = 'activo' 
         db.session.add(account)
 
         try:
@@ -92,6 +89,10 @@ class PersonController:
         if person:
             if not self.validate_Email(data["email"]):
                 return -11
+            existing_account = Account.query.filter(Account.email == data["email"], Account.person_id != person.id).first()
+
+            if existing_account:
+                return {"error": "El correo electrónico ya está registrado"}
             rol_name = data["rol"]
             rol = Rol.query.filter_by(rol=rol_name).first()
             if rol:
@@ -130,16 +131,6 @@ class PersonController:
                 return False
         else:
             return False
-
-    def search_person(self, atribute):
-        person = Person.query.filter(
-            (Person.identification == atribute) | (Person.name == atribute)
-        ).first()
-        
-        if person:
-            return person
-        else:
-            return -3
 
     def all_rol(self):
         roles = Rol.query.all()
