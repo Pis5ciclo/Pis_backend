@@ -109,12 +109,12 @@ class SensorController:
             return -3
         
     def all_types(self):
-        sensors = TypeSensor
-        sensors_data = [
-            {"name": sensor.value} for sensor in sensors
-        ]
-        return sensors_data
-
+        try:
+            # Obtén la lista de todos los tipos de sensores
+            sensors_data = TypeSensor.all_types()
+            return sensors_data, 200  # Devuelve los datos y un código de estado 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500 
     def guardar_datos_sensor(self, data):
         tds_value = data.get('tds')
         ip_address = data.get('ip')

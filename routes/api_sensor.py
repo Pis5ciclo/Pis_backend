@@ -46,23 +46,6 @@ def modify_sensor(external_id):
         return make_response_error(Errors.error["-9"], 400)
     else:
         return make_response_ok({"success": Success.success["4"]})   
-
-
-@api_sensor.route("/sensor/list_sensor_type/<type>", methods=["GET"])
-def listSensorType(type):
-    result = sensorDataController.list_sensor_type(type)
-    if result == -20:
-        return make_response_error(Errors.error["-20"], 404)
-    else:
-        return make_response_ok(result)
-
-@api_sensor.route("/sensor/list_sensor_name/<name>", methods=["GET"])
-def listSensorName(name):
-    result = sensorDataController.list_sensor_name(name)
-    if result == -20:
-        return make_response_error(Errors.error["-20"], 404)
-    else:
-        return make_response_ok(result)
     
 @api_sensor.route("/sensor/status/<external_id>", methods=["GET"])
 def desactivateSensor(external_id):
@@ -122,4 +105,9 @@ def api_get_data_latest():
 @api_sensor.route('/data/latest_air1/average', methods=['GET'])
 def api_get_data_average():
     data, status_code = sensorDataController.get_sensor_data_average()
+    return jsonify(data), status_code
+
+@api_sensor.route('/types', methods=['GET'])
+def all_type():
+    data, status_code = sensorController.all_types()
     return jsonify(data), status_code
