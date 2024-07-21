@@ -22,7 +22,20 @@ class SensorController:
             return -21
         
     def listSensor(self):
-        return Sensor.query.all()
+        sensors = Sensor.query.all()
+        sensorsList = []
+        for sensor in sensors:
+            sensorr = {
+                "external_id": sensor.external_id,
+                "ip": sensor.ip,
+                "latitude": sensor.latitude,
+                "longitude": sensor.longitude,
+                "name": sensor.name,
+                "status": sensor.status,
+                "type_sensor": sensor.type_sensor.name if sensor.type_sensor else None,
+            }
+            sensorsList.append(sensorr)
+        return sensorsList
     
     def listSensorName(self):
         active_sensors = Sensor.query.filter_by(status='activo').all()
