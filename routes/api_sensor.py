@@ -13,7 +13,7 @@ sensorDataController = SensorDataController()
 @api_sensor.route("/list_sensor", methods=["GET"])
 # @token_requeird
 def listSensor():
-        return make_response_ok([i.serialize for i in sensorController.listSensor()])
+        return make_response_ok(sensorController.listSensor())
 
 @api_sensor.route("/sensor/save", methods=["POST"])
 # @token_requeird
