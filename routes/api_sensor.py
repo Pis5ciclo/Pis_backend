@@ -98,14 +98,35 @@ def listNameSensor():
         return make_response_ok(sensorController.listSensorName())
     
 @api_sensor.route('/data/latest_air1', methods=['GET'])
-def api_get_data_latest():
+def api_get_data_latest_air1():
     data, status_code = sensorDataController.get_data_latest_air1()
     return jsonify(data), status_code
 
-@api_sensor.route('/data/latest_air1/average', methods=['GET'])
-def api_get_data_average():
-    data, status_code = sensorDataController.get_sensor_data_average()
+@api_sensor.route('/data/latest_air2', methods=['GET'])
+def api_get_data_latest_air2():
+    data, status_code = sensorDataController.get_data_latest_air2()
     return jsonify(data), status_code
+
+@api_sensor.route('/data/latest_water', methods=['GET'])
+def api_get_data_latest_water():
+    data, status_code = sensorDataController.get_data_latest_water()
+    return jsonify(data), status_code
+
+@api_sensor.route('/data/latest_air1/average', methods=['GET'])
+def api_get_data_average_1():
+    data, status_code = sensorDataController.get_sensor_data_average_1()
+    return jsonify(data), status_code
+
+@api_sensor.route('/data/latest_air2/average', methods=['GET'])
+def api_get_data_average_2():
+    data, status_code = sensorDataController.get_sensor_data_average_2()
+    return jsonify(data), status_code
+
+@api_sensor.route('/data/latest_water/average', methods=['GET'])
+def api_get_data_average_w():
+    data, status_code = sensorDataController.get_sensor_data_average_w()
+    return jsonify(data), status_code
+
 
 @api_sensor.route('/types', methods=['GET'])
 def all_type():
