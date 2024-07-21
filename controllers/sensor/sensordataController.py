@@ -138,3 +138,87 @@ class SensorDataController:
         }
         
         return data, 200
+    
+    def get_data_latest_air2(self):
+        sensor_data = SensorData.query.filter_by(sensor_id=2).order_by(SensorData.date.desc(), SensorData.hour.desc()).first()
+        
+        if not sensor_data:
+            return jsonify({"msg": "Sensor data not found", "code": 404}), 404
+
+        data = {
+            'id': sensor_data.id,
+            'data': sensor_data.data,
+            'date': sensor_data.date.strftime('%Y-%m-%d'),
+            'hour': sensor_data.hour.strftime('%H:%M:%S') if sensor_data.hour else None
+        }
+        
+        return data, 200
+    
+    def get_data_latest_water(self):
+        sensor_data = SensorData.query.filter_by(sensor_id=3).order_by(SensorData.date.desc(), SensorData.hour.desc()).first()
+        
+        if not sensor_data:
+            return jsonify({"msg": "Sensor data not found", "code": 404}), 404
+
+        data = {
+            'id': sensor_data.id,
+            'data': sensor_data.data,
+            'date': sensor_data.date.strftime('%Y-%m-%d'),
+            'hour': sensor_data.hour.strftime('%H:%M:%S') if sensor_data.hour else None
+        }
+        
+        return data, 200
+    
+    def get_sensor_data_average_1(self):
+        sensor_id = 1 
+        results = (db.session.query(
+            SensorData.date,
+            func.avg(SensorData.data).label('avg_value') 
+        )
+        .filter_by(sensor_id=sensor_id)
+        .group_by(SensorData.date)
+        .order_by(SensorData.date.asc())  
+        .all())
+
+        if not results:
+            return jsonify({"msg": "No data found", "code": 404}), 404
+
+        data = [{'date': result.date.strftime('%Y-%m-%d'), 'avg_value': float(result.avg_value)} for result in results]
+
+        return data, 200
+    
+    def get_sensor_data_average_2(self):
+        sensor_id = 2
+        results = (db.session.query(
+            SensorData.date,
+            func.avg(SensorData.data).label('avg_value') 
+        )
+        .filter_by(sensor_id=sensor_id)
+        .group_by(SensorData.date)
+        .order_by(SensorData.date.asc())  
+        .all())
+
+        if not results:
+            return jsonify({"msg": "No data found", "code": 404}), 404
+
+        data = [{'date': result.date.strftime('%Y-%m-%d'), 'avg_value': float(result.avg_value)} for result in results]
+
+        return data, 200
+    
+    def get_sensor_data_average_w(self):
+        sensor_id = 3
+        results = (db.session.query(
+            SensorData.date,
+            func.avg(SensorData.data).label('avg_value') 
+        )
+        .filter_by(sensor_id=sensor_id)
+        .group_by(SensorData.date)
+        .order_by(SensorData.date.asc())  
+        .all())
+
+        if not results:
+            return jsonify({"msg": "No data found", "code": 404}), 404
+
+        data = [{'date': result.date.strftime('%Y-%m-%d'), 'avg_value': float(result.avg_value)} for result in results]
+
+        return data, 200
