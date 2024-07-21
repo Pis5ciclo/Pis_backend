@@ -11,12 +11,12 @@ api_sensor = Blueprint("api_sensor", __name__)
 sensorController = SensorController()
 sensorDataController = SensorDataController()
 @api_sensor.route("/list_sensor", methods=["GET"])
-# @token_requeird
+@token_requeird
 def listSensor():
         return make_response_ok(sensorController.listSensor())
 
 @api_sensor.route("/sensor/save", methods=["POST"])
-# @token_requeird
+@token_requeird
 def createSensor():
     data = request.json
     result = sensorController.save_sensor(data)
@@ -33,6 +33,7 @@ def createSensor():
         return make_response_error(Errors.error["-9"], 400)   
 
 @api_sensor.route('/modify_sensor/<external_id>', methods=['POST'])
+@token_requeird
 def modify_sensor(external_id):
     data = request.json
     result = sensorController.modify_sensor(external_id, data)
@@ -48,6 +49,7 @@ def modify_sensor(external_id):
         return make_response_ok({"success": Success.success["4"]})   
     
 @api_sensor.route("/sensor/status/<external_id>", methods=["GET"])
+@token_requeird
 def desactivateSensor(external_id):
     result = sensorController.deactivate_sensor(external_id)
     if result == 5:
@@ -93,7 +95,7 @@ def listSensorData():
 
 
 @api_sensor.route("/sensor/list_sensor_name", methods=["GET"])
-# @token_requeird
+@token_requeird
 def listNameSensor():
         return make_response_ok(sensorController.listSensorName())
     
@@ -129,6 +131,7 @@ def api_get_data_average_w():
 
 
 @api_sensor.route('/types', methods=['GET'])
+@token_requeird
 def all_type():
     data, status_code = sensorController.all_types()
     return jsonify(data), status_code
