@@ -75,7 +75,7 @@ class SensorController:
 
     def modify_sensor(self, external_id, data):
         sensor = Sensor.query.filter_by(external_id=external_id).first()
-        repeated_ip = Sensor.query.filter_by(ip=data["ip"]).first()
+        repeated_ip = Sensor.query.filter(Sensor.ip == data["ip"], Sensor.id != sensor.id).first()
         if repeated_ip:
             return -23
         if sensor:

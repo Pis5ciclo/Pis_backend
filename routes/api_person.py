@@ -39,7 +39,9 @@ def modify_person(external_id):
     data = request.json
     modified_person = personController.modify_person(external_id, data)
     print(external_id)
-    if modified_person == -3:
+    if modified_person == -2:
+        return make_response(jsonify({"error": "El correo electrónico ya está registrado"}), 400)
+    elif modified_person == -3:
         return make_response(jsonify({"error": Errors.error["-3"]}), 400)
     elif modified_person == -8:
         return make_response(jsonify({"error": Errors.error["-8"]}), 400)

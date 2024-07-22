@@ -92,7 +92,7 @@ class PersonController:
             existing_account = Account.query.filter(Account.email == data["email"], Account.person_id != person.id).first()
 
             if existing_account:
-                return {"error": "El correo electrónico ya está registrado"}
+                return -2
             rol_name = data["rol"]
             rol = Rol.query.filter_by(rol=rol_name).first()
             if rol:
