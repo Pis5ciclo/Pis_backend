@@ -16,7 +16,7 @@ def listPersonAccount():
     return make_response_ok(personController.listPersonAccount())
     
 @api_person.route("/person/save", methods=["POST"])
-@token_requeird
+# @token_requeird
 def createPerson():
     data = request.json
     result = personController.save_person(data)
@@ -34,7 +34,7 @@ def createPerson():
         return make_response(jsonify({"error": "Error desconocido"}), 500)
 
 @api_person.route('/modify_person/<external_id>', methods=['POST'])
-@token_requeird
+# @token_requeird
 def modify_person(external_id):
     data = request.json
     modified_person = personController.modify_person(external_id, data)
@@ -61,7 +61,7 @@ def deactivate_person(external_id):
         return make_response_error(Errors.error["-3"], 404)
     
 @api_person.route('/roles', methods=['GET'])
-@token_requeird
+# @token_requeird
 def list_roles():
     return make_response(
         jsonify(

@@ -85,6 +85,7 @@ class PersonController:
             return -4
 
     def modify_person(self, external_id, data):
+        print("-----------", external_id)
         person = Person.query.filter_by(external_id=external_id).first()
         if person:
             if not self.validate_Email(data["email"]):
